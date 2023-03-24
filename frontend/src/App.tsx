@@ -10,34 +10,41 @@ import { useQuery } from "@apollo/client";
 
 import "./App.css";
 
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
 import { GET_ALL_USERS } from "./API/Query";
 import IUser from "./Interfaces/IUser";
 import Deposit from "./components/Deposit/Deposit";
-import { DEPOSIT, UPDATECRIDET } from "./API/Mutation";
+import { ADDACCOUNT, DEPOSIT, UPDATECRIDET } from "./API/Mutation";
 import UpdateCredit from "./components/UpdateCredit";
+import AddAccount from "./components/AddAccount";
 function App() {
   const { loading, error, data, refetch } = useQuery<IUser>(GET_ALL_USERS);
 
   return (
     <div className="App">
+      <AddAccount api={ADDACCOUNT} refetch={refetch} />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>passport number</TableCell>
-              <TableCell align="right">name</TableCell>
-              <TableCell align="right">credit</TableCell>
-              <TableCell align="right">cash</TableCell>
-              <TableCell align="right">role</TableCell>
-              <TableCell align="right">Active</TableCell>
-              <TableCell align="right">Deposit</TableCell>
-              <TableCell align="right">edit credit</TableCell>
-              <TableCell align="right">Transfer</TableCell>
-              <TableCell align="right">withdraw</TableCell>
+              <TableCell align="center">name</TableCell>
+              <TableCell align="center">credit</TableCell>
+              <TableCell align="center">cash</TableCell>
+              <TableCell align="center">role</TableCell>
+              <TableCell align="center">Active</TableCell>
+              <TableCell align="center">Deposit</TableCell>
+              <TableCell align="center">edit credit</TableCell>
+              <TableCell align="center">Transfer</TableCell>
+              <TableCell align="center">withdraw</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
+            {loading && (
+              <TableRow sx={{ height: "200px" }}>
+                <CircularProgress color="secondary" />
+              </TableRow>
+            )}
             {data &&
               data.getAllUsers.map((row) => (
                 <TableRow
@@ -47,13 +54,13 @@ function App() {
                   <TableCell component="th" scope="row">
                     {row.passportNumber}
                   </TableCell>
-                  <TableCell align="right">{row.name}</TableCell>
-                  <TableCell align="right">{row.credit}</TableCell>
-                  <TableCell align="right">{row.cash}</TableCell>
-                  <TableCell align="right">{row.role}</TableCell>
-                  <TableCell align="right">{row.active + ""}</TableCell>
+                  <TableCell align="center">{row.name}</TableCell>
+                  <TableCell align="center">{row.credit}</TableCell>
+                  <TableCell align="center">{row.cash}</TableCell>
+                  <TableCell align="center">{row.role}</TableCell>
+                  <TableCell align="center">{row.active + ""}</TableCell>
 
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <Deposit
                       api={DEPOSIT}
                       message="Deposit"
@@ -61,7 +68,7 @@ function App() {
                       userPassport={row.passportNumber + ""}
                     />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <UpdateCredit
                       api={UPDATECRIDET}
                       message="Update Credit"
@@ -69,12 +76,12 @@ function App() {
                       userPassport={row.passportNumber + ""}
                     />
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <Button variant="outlined" color="secondary">
                       Transfer
                     </Button>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <Button variant="outlined" color="secondary">
                       withdraw
                     </Button>

@@ -10,3 +10,9 @@ export interface IResultMsgEditCredit {
     result: boolean;
   };
 }
+export interface IResultMsgEditAddAccount {
+  addAccount: {
+    msg: string;
+    error: boolean;
+  };
+}

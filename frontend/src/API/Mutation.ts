@@ -16,3 +16,21 @@ export const UPDATECRIDET = gql`
     }
   }
 `;
+export const ADDACCOUNT = gql`
+  mutation MyMutation(
+    $passportNumber: String!
+    $password: String!
+    $name: String!
+  ) {
+    addAccount(
+      userData: {
+        passportNumber: $passportNumber
+        password: $password
+        name: $name
+      }
+    ) {
+      error
+      msg
+    }
+  }
+`;

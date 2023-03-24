@@ -9,6 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { DocumentNode, gql, useMutation } from "@apollo/client";
 import { Alert, CircularProgress, Snackbar } from "@mui/material";
 import { IResultMsgEditCredit } from "../Interfaces/IResultMsg";
+import PopMessage from "./PopMessage";
 
 export default ({
   message,
@@ -22,9 +23,11 @@ export default ({
   refetch: () => {};
 }) => {
   const [open, setOpen] = React.useState(false);
+  const [popmessage, setMessage] = React.useState(false);
   const [mutate, { loading, data }] = useMutation<IResultMsgEditCredit>(api);
 
   const handleClickOpen = () => {
+    setMessage(false);
     setOpen(true);
   };
   const amount = React.useRef(0);
@@ -34,17 +37,13 @@ export default ({
 
   return (
     <div>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={!!data}
-      >
-        <Alert
-          severity={data?.editCredit.result ? "success" : "error"}
-          sx={{ width: "100%" }}
-        >
-          {data?.editCredit.msg}
-        </Alert>
-      </Snackbar>
+      {popmessage && data && (
+        <PopMessage
+          open={!!data}
+          text={data?.editCredit.msg || ""}
+          type={data?.editCredit.result ? "success" : "error"}
+        />
+      )}
       <Button onClick={handleClickOpen} variant="outlined" color="secondary">
         {message}
       </Button>
@@ -72,6 +71,7 @@ export default ({
           <Button
             disabled={loading}
             onClick={() => {
+              setMessage(true);
               mutate({
                 variables: { amount: amount.current, userPassport },
                 onCompleted() {

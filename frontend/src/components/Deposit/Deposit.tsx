@@ -6,9 +6,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { DocumentNode, gql, useMutation } from "@apollo/client";
-import { Alert, CircularProgress, Snackbar } from "@mui/material";
+import { DocumentNode, useMutation } from "@apollo/client";
+import { CircularProgress } from "@mui/material";
 import { IResultMsgDeposit } from "../../Interfaces/IResultMsg";
+import PopMessage from "../PopMessage";
 
 export default ({
   message,
@@ -23,8 +24,10 @@ export default ({
 }) => {
   const [open, setOpen] = React.useState(false);
   const [mutate, { loading, data }] = useMutation<IResultMsgDeposit>(api);
+  const [popmessage, setMessage] = React.useState(false);
 
   const handleClickOpen = () => {
+    setMessage(false);
     setOpen(true);
   };
   const amount = React.useRef(0);
@@ -34,17 +37,13 @@ export default ({
 
   return (
     <div>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={!!data}
-      >
-        <Alert
-          severity={data?.Deposit.result ? "success" : "error"}
-          sx={{ width: "100%" }}
-        >
-          {data?.Deposit.msg}
-        </Alert>
-      </Snackbar>
+      {popmessage && data && (
+        <PopMessage
+          open={!!data}
+          text={data?.Deposit.msg || ""}
+          type={data?.Deposit.result ? "success" : "error"}
+        />
+      )}
       <Button onClick={handleClickOpen} variant="outlined" color="secondary">
         {message}
       </Button>
@@ -72,6 +71,8 @@ export default ({
           <Button
             disabled={loading}
             onClick={() => {
+              setMessage(true);
+
               mutate({
                 variables: { amount: amount.current, userPassport },
                 onCompleted() {
