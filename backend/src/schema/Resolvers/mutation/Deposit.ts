@@ -13,6 +13,9 @@ export default async (_, { userPassport, amount }) => {
       },
     }
   )
-    .then(() => ({ result: true, msg: "user updated!" }))
+    .then((e) => {
+      if (e.matchedCount > 0) return { result: true, msg: "user updated!" };
+      return { result: false, msg: "user was not found!" };
+    })
     .catch(() => ({ result: false, msg: "user was not found!" }));
 };

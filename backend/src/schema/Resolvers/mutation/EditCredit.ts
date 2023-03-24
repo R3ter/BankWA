@@ -8,6 +8,9 @@ export default async (_, { userPassport, amount }) => {
     { passportNumber: userPassport },
     { $set: { credit: amount } }
   )
-    .then(() => ({ result: true, msg: "user updated!" }))
-    .catch(() => ({ result: false, msg: "user was not found!" }));
+    .then((e) => {
+      if (e.matchedCount > 0) return { result: true, msg: "user updated!" };
+      return { result: false, msg: "user was not found!" };
+    })
+    .catch(() => ({ result: false, msg: "Error!!" }));
 };
