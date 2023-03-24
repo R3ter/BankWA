@@ -4,6 +4,7 @@ type User {
   role: String!
   cash: Float!
   credit: Float!
+  active: Boolean!
 }
 enum sortBy {
   cash
