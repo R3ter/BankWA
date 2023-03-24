@@ -8,3 +8,11 @@ export const DEPOSIT = gql`
     }
   }
 `;
+export const UPDATECRIDET = gql`
+  mutation MyMutation($amount: Float!, $userPassport: String!) {
+    editCredit(amount: $amount, userPassport: $userPassport) {
+      msg
+      result
+    }
+  }
+`;

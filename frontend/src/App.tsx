@@ -14,6 +14,8 @@ import { Button } from "@mui/material";
 import { GET_ALL_USERS } from "./API/Query";
 import IUser from "./Interfaces/IUser";
 import Deposit from "./components/Deposit/Deposit";
+import { DEPOSIT, UPDATECRIDET } from "./API/Mutation";
+import UpdateCredit from "./components/UpdateCredit";
 function App() {
   const { loading, error, data, refetch } = useQuery<IUser>(GET_ALL_USERS);
 
@@ -53,14 +55,19 @@ function App() {
 
                   <TableCell align="right">
                     <Deposit
+                      api={DEPOSIT}
+                      message="Deposit"
                       refetch={refetch}
                       userPassport={row.passportNumber + ""}
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <Button variant="outlined" color="secondary">
-                      edit credit
-                    </Button>
+                    <UpdateCredit
+                      api={UPDATECRIDET}
+                      message="Update Credit"
+                      refetch={refetch}
+                      userPassport={row.passportNumber + ""}
+                    />
                   </TableCell>
                   <TableCell align="right">
                     <Button variant="outlined" color="secondary">

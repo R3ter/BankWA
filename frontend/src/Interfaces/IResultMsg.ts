@@ -1,5 +1,11 @@
-export default interface IResultMsg {
+export interface IResultMsgDeposit {
   Deposit: {
+    msg: string;
+    result: boolean;
+  };
+}
+export interface IResultMsgEditCredit {
+  editCredit: {
     msg: string;
     result: boolean;
   };
