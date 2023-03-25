@@ -6,54 +6,60 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { DocumentNode, useMutation } from "@apollo/client";
-import { CircularProgress } from "@mui/material";
-import { IResultMsgDeposit } from "../../Interfaces/IResultMsg";
-import PopMessage from "../PopMessage";
+import { DocumentNode, gql, useMutation } from "@apollo/client";
+import { Alert, CircularProgress, Snackbar } from "@mui/material";
+import {
+  IResultMsgEditCredit,
+  IResultMsgTransfer,
+} from "../API/Interfaces/IResultMsg";
 
 export default ({
   message,
   userPassport,
   api,
+  setMtext,
   refetch,
 }: {
   message: string;
   userPassport: string;
+  setMtext: ({ msg, error }: { msg: string; error: boolean }) => void;
   api: DocumentNode;
   refetch: () => {};
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [mutate, { loading, data }] = useMutation<IResultMsgDeposit>(api);
-  const [popmessage, setMessage] = React.useState(false);
+  const [mutate, { loading, data }] = useMutation<IResultMsgTransfer>(api);
 
   const handleClickOpen = () => {
-    setMessage(false);
     setOpen(true);
   };
-  const amount = React.useRef(0);
+  const amount = React.useRef({ amount: 0, to: "" });
   const handleClose = () => {
     setOpen(false);
   };
 
   return (
     <div>
-      {popmessage && data && (
-        <PopMessage
-          open={!!data}
-          text={data?.Deposit.msg || ""}
-          type={data?.Deposit.result ? "success" : "error"}
-        />
-      )}
       <Button onClick={handleClickOpen} variant="outlined" color="secondary">
         {message}
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Deposit</DialogTitle>
+        <DialogTitle>Update Credit</DialogTitle>
         <DialogContent>
           <DialogContentText></DialogContentText>
           <TextField
             onChange={(e) => {
-              amount.current = +e.target.value;
+              amount.current.to = e.target.value;
+            }}
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Transfer To (passport number)"
+            fullWidth
+            variant="standard"
+          />
+          <TextField
+            onChange={(e) => {
+              amount.current.amount = +e.target.value;
             }}
             autoFocus
             margin="dense"
@@ -71,13 +77,21 @@ export default ({
           <Button
             disabled={loading}
             onClick={() => {
-              setMessage(true);
-
               mutate({
-                variables: { amount: amount.current, userPassport },
-                onCompleted() {
-                  handleClose();
-                  refetch();
+                variables: {
+                  amount: amount.current.amount,
+                  from: userPassport,
+                  to: amount.current.to,
+                },
+                onCompleted({ Transfer: { result, msg } }) {
+                  setMtext({
+                    msg: msg || "",
+                    error: !result,
+                  });
+                  if (result) {
+                    handleClose();
+                    refetch();
+                  }
                 },
               });
             }}

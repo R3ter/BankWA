@@ -8,7 +8,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DocumentNode, useMutation } from "@apollo/client";
 import { CircularProgress } from "@mui/material";
-import { IResultMsgEditCredit } from "../API/Interfaces/IResultMsg";
+import { IResultMsgDeposit } from "../API/Interfaces/IResultMsg";
 
 export default ({
   message,
@@ -24,8 +24,7 @@ export default ({
   refetch: () => {};
 }) => {
   const [open, setOpen] = React.useState(false);
-
-  const [mutate, { loading, data }] = useMutation<IResultMsgEditCredit>(api);
+  const [mutate, { loading, data }] = useMutation<IResultMsgDeposit>(api);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -41,7 +40,7 @@ export default ({
         {message}
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update Credit</DialogTitle>
+        <DialogTitle>Deposit</DialogTitle>
         <DialogContent>
           <DialogContentText></DialogContentText>
           <TextField
@@ -64,13 +63,9 @@ export default ({
           <Button
             disabled={loading}
             onClick={() => {
-              setMtext({
-                msg: "",
-                error: false,
-              });
               mutate({
                 variables: { amount: amount.current, userPassport },
-                onCompleted({ editCredit: { result, msg } }) {
+                onCompleted({ Deposit: { result, msg } }) {
                   setMtext({
                     msg: msg || "",
                     error: !result,

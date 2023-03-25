@@ -8,24 +8,25 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import { DocumentNode, useMutation } from "@apollo/client";
 import { CircularProgress } from "@mui/material";
-import { IResultMsgEditCredit } from "../API/Interfaces/IResultMsg";
+import { IResultMsgWithdraw } from "../API/Interfaces/IResultMsg";
 
 export default ({
   message,
   userPassport,
   api,
-  setMtext,
   refetch,
+  setMtext,
 }: {
   message: string;
   userPassport: string;
-  setMtext: ({ msg, error }: { msg: string; error: boolean }) => void;
   api: DocumentNode;
+  setMtext: ({ msg, error }: { msg: string; error: boolean }) => void;
+
   refetch: () => {};
 }) => {
   const [open, setOpen] = React.useState(false);
-
-  const [mutate, { loading, data }] = useMutation<IResultMsgEditCredit>(api);
+  const [mutate, { loading, data }] = useMutation<IResultMsgWithdraw>(api);
+  const [popmessage, setMessage] = React.useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -41,7 +42,7 @@ export default ({
         {message}
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Update Credit</DialogTitle>
+        <DialogTitle>Withdraw</DialogTitle>
         <DialogContent>
           <DialogContentText></DialogContentText>
           <TextField
@@ -64,21 +65,15 @@ export default ({
           <Button
             disabled={loading}
             onClick={() => {
-              setMtext({
-                msg: "",
-                error: false,
-              });
+              setMessage(true);
+
               mutate({
                 variables: { amount: amount.current, userPassport },
-                onCompleted({ editCredit: { result, msg } }) {
+                onCompleted({ WithdrawMoney: { msg, result } }) {
                   setMtext({
                     msg: msg || "",
                     error: !result,
                   });
-                  if (result) {
-                    handleClose();
-                    refetch();
-                  }
                 },
               });
             }}
