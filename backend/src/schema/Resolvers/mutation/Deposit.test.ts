@@ -1,51 +1,57 @@
-import { assert } from "chai";\
-import Deposit from "./Deposit";
+import { expect } from "chai";
+import UserModel from "../../../../models/UserModel";
+import updateUserCash from "./Deposit";
 
-describe("checking addAccount function", () => {
-  it("should return error for passport number", async () => {
-    const result = await Deposit(
-      undefined,
-      {
-        userPassport:"",amount:100
-      },
-    );
-    assert.deepEqual(result, {
-      error: true,
-      msg: "The passport number must consist of 9 digits and should not contain any letters or special characters.",
+describe("updateUserCash function", () => {
+  before(async () => {
+    await new UserModel({
+      passportNumber: "123499999",
+      name: "waddwadwa",
+      password: "dwaawdadwadw",
+    }).save();
+    await new UserModel({
+      passportNumber: "123599999",
+      name: "waddwadwa",
+      password: "dwaawdadwadw",
+      active: true,
+    }).save();
+  });
+  it("should return false and error message if amount is negative or zero", async () => {
+    const result = await updateUserCash(null, {
+      userPassport: "123599999",
+      amount: -100,
+    });
+    expect(result).to.deep.equal({
+      result: false,
+      msg: "amount cant be negative or zero",
     });
   });
-  it("should return error for password", async () => {
-    const result = await AddAccount(
-      undefined,
-      {
-        userData: {
-          name: "waddwa",
-          passportNumber: "923212341",
-          password: "312321",
-        },
-      },
-      undefined
-    );
-    assert.deepEqual(result, {
-      error: true,
-      msg: "password must be at least 8 characters",
+
+  it("should return false and error message if user is not active", async () => {
+    const result = await updateUserCash(null, {
+      userPassport: "123499999",
+      amount: 100,
     });
+    expect(result).to.deep.equal({ result: false, msg: "User is not active" });
   });
-  it("should return error for name", async () => {
-    const result = await AddAccount(
-      undefined,
-      {
-        userData: {
-          name: "wad11dwa",
-          passportNumber: "923212341",
-          password: "312321",
-        },
-      },
-      undefined
-    );
-    assert.deepEqual(result, {
-      error: true,
-      msg: "Validator failed for path `name` with value `wad11dwa`",
+
+  it("should return true and success message if user cash was updated", async () => {
+    const result = await updateUserCash(null, {
+      userPassport: "123599999",
+      amount: 100,
     });
+    expect(result).to.deep.equal({ result: true, msg: "user updated!" });
+  });
+
+  it("should return false and error message if user was not found", async () => {
+    const result = await updateUserCash(null, {
+      userPassport: "213213",
+      amount: 100,
+    });
+    expect(result).to.deep.equal({ result: false, msg: "user was not found!" });
+  });
+  after(async () => {
+    await UserModel.deleteOne({ passportNumber: "123499999" });
+    await UserModel.deleteOne({ passportNumber: "123599999" });
   });
 });
